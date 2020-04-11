@@ -1,0 +1,91 @@
+---
+title: "Linear Models"
+author: "Manickavela"
+date: "10/12/2019"
+output: html_document
+---
+
+
+#Understanding linear models with p-value,coeffiecients, and other statistics 
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+summary(attitude)
+```
+
+```{r}
+lm.fit = lm(rating ~ .,data=attitude)
+summary(lm.fit)
+```
+
+
+
+```{r}
+plot(lm.fit)
+```
+
+
+```{r}
+RatingComplaint = lm(rating ~ complaints,data=attitude)
+plot(RatingComplaint)
+qqplot(attitude$complaints,attitude$ complaints)
+```
+
+
+```{r}
+summary(RatingComplaint)
+```
+
+```{r}
+bestmodel = lm(rating ~ complaints+learning,data=attitude)
+summary(bestmodel)
+plot(bestmodel)
+ggplot() +
+  geom_scatter(aes(x = ))
+```
+
+```{r}
+worstmodel = lm(rating ~ raises+critical,data=attitude)
+summary(worstmodel)
+plot(worstmodel)
+```
+
+
+
+```{r}
+#Transformation tryout
+complaints = attitude$complaints
+complaint = complaints^2
+
+```
+
+```{r}
+transformedComplaint = lm(rating ~ complaint,data=attitude)
+plot(transformedComplaint)
+```
+
+```{r}
+summary(transformedComplaint)
+```
+
+```{r}
+require(stats); require(graphics)
+pairs(attitude, main = "attitude data")
+summary(attitude)
+summary(fm1 <- lm(rating ~ ., data = attitude))
+opar <- par(mfrow = c(2, 2), oma = c(0, 0, 1.1, 0),
+            mar = c(4.1, 4.1, 2.1, 1.1))
+plot(fm1)
+summary(fm2 <- lm(rating ~ complaints, data = attitude))
+
+plot(fm2)
+par(opar)
+```
+
+
+
