@@ -1,0 +1,140 @@
+---
+title: "ANOVA"
+author: "Manix"
+date: "21/01/2020"
+output:
+  html_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library('dplyr')
+library('ggplot2')
+library('stats')
+data <- ToothGrowth
+str(data)
+
+```
+
+```{r}
+#Transformation ,Encoding and  Cleaning
+data$supp = as.factor(data$supp)
+data$dose = as.factor(data$dose)
+#data$len = 1/data$len
+```
+
+```{r}
+#Testing of Assumtions for ANOVA
+#1  Normality
+  # H 0 : Distribution is Normal   
+shapiro.test(data$len) 
+shapiro.test(data$len[data$supp == 'VC']) 
+shapiro.test(data$len[data$supp == 'OJ']) 
+  #p-value > 0.5 => Accept H 0
+  #len on the whole is normal , datapoints on len with supplement VC is also  normal
+  #but with the case of OJ it is not completely normal
+
+#2 Variance is Constant
+#H 0 Variance is same across the group
+  bartlett.test(len~dose,data)
+  #p-value > 0.5 Variance is Same
+```
+
+```{r}
+data %>% 
+  group_by(dose) %>%
+  summarise(
+    count = n(),
+    mean = mean(len),
+    sd = sd(len)
+  )
+
+#There is definitely difference between the groups(for dose alone) 
+data %>% 
+  group_by(supp) %>%
+  summarise(
+    count = n(),
+    mean = mean(len),
+    sd = sd(len)
+  )
+#The difference of mean between the groups of Supplement isnt very significant but neverthless it is there
+#There is good difference between the various groups of Dosages
+
+#we shall realise it through other methos too
+```
+
+
+```{r}
+ggplot(data, aes(x = dose, y = len, fill = dose)) +
+geom_boxplot() +
+geom_jitter(shape = 15,
+color = "steelblue",
+position = position_jitter(0.21)) +
+theme_classic()
+
+ggplot(data, aes(x = supp, y = len, fill = supp)) +
+geom_boxplot() +
+geom_jitter(shape = 15,
+color = "steelblue",
+position = position_jitter(0.21)) +
+theme_classic()
+
+#It is very evident from the boxplots that there is good difference between the 3 means of 3 groups grouped by 3 different types of dosages  , next we shall try to prove this differnce using a statistical test with anova
+```
+```{r}
+#One way ANOVA
+anova1 = aov(len ~ dose, data)
+summary(anova1)
+
+anova2 = aov(len ~ supp, data)
+summary(anova2)
+#The p-value of dose is indeed less than the treshold statistical significance 0.05,
+#which means there is definitely statistical difference between the mean within the groups of 2 population
+#Difference between the means of groups within the supplement is not very different , they can almost considered to be equal
+```
+
+```{r}
+test <- TukeyHSD(anova1)
+test
+plot(test)
+#TukeyHSD compares the various group inside an Variable
+#The plot plots the mean of various different groups
+
+#Dosage has 3 different groups having significantly different means
+
+#diff gives the difference between the mean of groups
+#lwr and upr are the upper end points  of the confidence interval at 95%
+#p-value adjusted is a better value of p-value with mutli-variate cases
+```
+```{r}
+test <- TukeyHSD(anova2)
+test
+plot(test)
+#TukeyHSD compares the various group inside an Variable
+#The plot plots the mean of various different groups
+
+#Supplement has 2 different groups having not so significant different means
+
+#diff gives the difference between the mean of groups
+#lwr and upr are the upper end points  of the confidence interval at 95%
+#p-value adjusted is a better value of p-value with mutli-variate cases
+```
+
+```{r}
+#Two way ANOVA
+#It is only through 2-way ANOVA can we compare the 2 variables (Both must be Factor variables)
+#We sahll compare the means of Supplements and Dosages
+anova <- aov(len ~ supp + dose,data)
+summary(anova)
+#H 0 : The means is same for both the variables
+  #p-value < 0.05 : We reject H0
+  #There is significant statistical difference between both the means 
+```
+
+
+
+
