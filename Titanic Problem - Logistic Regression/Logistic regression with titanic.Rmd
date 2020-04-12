@@ -1,0 +1,116 @@
+---
+title: "Logistic Regressin"
+author: "Manickaevela"
+date: "24/12/2019"
+output:
+  word_document: default
+  html_document: default
+---
+```{r}
+library('caret')
+#Importing data
+Tdata <- read.csv('titanic.csv')
+#view(Tdata)
+Tdata <- Tdata[,c(2,3,5,6,7)]
+#With previous experiments it is understood that these factors play a major contribution
+
+#PassengerId , Name , Ticket , Fare , Cabin , Embarked though they seems to be an significant factor 
+#they dont contribute much to the model if not of hinderance 
+#Therefore , they were removed 
+
+Tdata <- Tdata[complete.cases(Tdata),]
+#It will drop columns with Nan
+str(Tdata)
+```
+
+```{r}
+#Data Cleaning - Feature scaling and encoding
+#converting the variables to fit with the model function
+set.seed(2047)
+Tdata$Survived = as.factor(Tdata$Survived)
+
+Tdata$Sex = as.factor(Tdata$Sex)
+Tdata$Sex = as.numeric(Tdata$Sex)
+
+Tdata$Age = ifelse(is.na(Tdata$Age),0,Tdata$Age)
+
+Tdata$Pclass <- as.numeric(Tdata$Pclass)
+
+Tdata$SibSp <- as.numeric(Tdata$SibSp)
+
+```
+
+```{r}
+set.seed(1023)
+trainIndex <- createDataPartition(Tdata$Survived , p=0.8 ,list = F)
+trainData <- Tdata[trainIndex,]
+testData <- Tdata[-trainIndex,]
+#set.seed will prevent the createDataPartition function from taking random samples
+#createDataPartition function will partition the dataset into 80% and 20% arbitrarily (p = 0.8)
+#Creating 2 sets will help us understand our model which we predicted through training data using testdata
+```
+
+```{r}
+'%ni%' <- Negate('%in%')  # define 'not in' func
+options(scipen=999)  # prevents printing scientific notations.
+# Down Sample
+set.seed(2047)
+down_train <- downSample(x = trainData[, colnames(trainData) %ni% "Survived"],
+                         y = trainData$Survived, yname = "Survived")
+table(down_train$Survived)
+#It is important to take proportional data points for logistic regression as it data points favoring particular event 
+#can be more hugly influencing the model than the predictors itself
+#Therefore equal proportions of data is taken
+```
+
+
+```{r}
+#logistic regerssion
+logitmodel <- glm(Survived ~ Pclass + Sex + Age + SibSp ,family = "binomial",data = trainData)
+
+#GLM - Generalised Linear Model
+#This function is used to generalise the linear regression models assumption on Gaussian Distribution(i.e Error &etc)
+#by giving the family as binomial we use it for logistic regression
+#Called logistic because between the two values(0 or 1 ) the regression line is curve mapped log function
+#The predictor value must be 0 or 1 (or any other enumerated type)
+#The Model on feeding input , gives us the probability between 0 - 1 where the input is likely to belong
+
+summary(logitmodel)
+```
+
+```{r}
+#Predicts the value for the test set using the model
+pred <- predict(logitmodel,newdata = testData , type= "response")
+z = cbind(testData$Survived , round(pred,3))                          #Binds the y-value and predicted y-value
+plot(density(pred))                                                   #Plots the density curve (value range -> 0 - 1)
+
+#The density curve gives an glimse of how the predicted values are
+#There seems to be more probability for people to die than survive
+#but its not the probability of surviving is taken from 0.5 onwards 
+#since the width  is more there is almost equal probability that they may survive or die
+#But the peak near 0 talks about how the predictors clearly defines thier death
+```
+
+```{r}
+#Concluding 
+y_pred_num <- ifelse(pred > 0.5, 1, 0)
+y_pred <- factor(y_pred_num, levels=c(0, 1))
+y_act <- testData$Survived
+#With the model giving the probability we map the predicted values to 0 or 1 
+#if predicted values are less than 0.5 then there is less probability of survival
+#For more than 0.5 more probability of surviving 
+#y_act will have predicted values as survived or not
+```
+
+```{r}
+mean(y_pred == y_act)
+y_pred
+y_act
+#This compares the observed values with predicted values
+#0.859 signifies almost 85% of the predictions are right
+```
+
+```{r}
+#Confusion matrix will give an general summary of the predicted values and observed values
+caret::confusionMatrix(y_pred, y_act, positive="1", mode="everything")
+```
