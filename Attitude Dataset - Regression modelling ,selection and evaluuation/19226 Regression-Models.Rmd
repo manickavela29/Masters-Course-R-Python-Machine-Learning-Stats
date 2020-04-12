@@ -1,0 +1,132 @@
+---
+title: "Regression models"
+author: "Manix"
+date: "16/12/2019"
+output: html_document
+---
+
+library(tidyverse)
+library(corrplot)
+library(ggplot2)
+```{r}
+summary(attitude)
+dim(attitude)
+basicmodel = lm(rating ~ . , data = attitude)
+
+summary(basicmodel)
+```
+```{r}
+#Comparing and removing the outliers
+newdata = attitude[-c(6,12,23),]
+basicmodel2 = lm(rating ~ . , data = newdata)
+summary(basicmodel2)
+```
+```{r}
+#It can be observed from the variance graph that 2 obervations 24 and 9 are influencing ,
+#So we remove those two points and oberve the linear model again
+newdata1 = attitude[-c(6,9,12,16,23,24),]
+basicmodel3 = lm(rating ~ . , data = newdata1)
+summary(basicmodel3)
+```
+
+
+```{r}
+AIC(basicmodel)
+AIC(basicmodel2)
+AIC(basicmodel3)
+```
+/*
+##  Model        Adjusted R-squared       Removed
+##  ====
+##basicmodel          0.6628                0
+##basicmodel2         0.7348                3           
+##basicmodel3         0.7298                5
+
+##Definitly the basicmode2 is the best , its Adjusted R-squared is greater than the other 2 models.
+##Basicmodel3 failed because removing 2 points greatly affected the linear model , 
+##  that to when the data set is very small each point has great influence in it .
+##Removing 2 outliers will only make the other few points as outliers.
+##Therefore , it is defintly not good to remove outliers in this data set as 
+##  dataset in itself is a summary of an dataset
+
+*/
+
+```{r}
+#Comparing various types(Removed data points Vs Significant columns)
+
+bettermodel <- lm(rating ~ complaints+learning,data = attitude)
+summary(bettermodel)
+
+```
+```{r}
+bettermodel1 <- lm(rating ~ complaints+learning,data = newdata)
+summary(bettermodel1)
+
+```
+```{r}
+###Power transformations
+#Using the function 'ordered' it would suggest the possible power transformations
+#It is has been tested and concluded that linear models of both complaints and learnings are best suited
+bettermodel2 <- lm(rating ~ complaints,data = newdata)
+summary(bettermodel2)
+ggplot(data = newdata,aes(x = complaints , y =rating)) +
+  geom_point(aes(x = complaints , y =rating)) +
+  geom_smooth(method = lm,y ~ x)
+```
+```{r}
+#Camparison of better models
+AIC(bettermodel)                      #0.6864       outliers are not removed
+AIC(bettermodel1)                     #0.7297
+AIC(bettermodel2)                     #0.7121
+```
+
+
+```{r}
+#Transforming data with log
+transformedmodel <- lm(rating ~ log(complaints)+log(learning),data = newdata)
+summary(transformedmodel)
+```
+```{r}
+transformedmodel2 <- lm(rating ~ log(complaints),data = newdata)
+summary(transformedmodel2)
+```
+
+
+
+```{r}
+
+#Removing ouliers                 Rsquared-adjusted
+AIC(basicmodel)                       #0.6628
+AIC(basicmodel2)                      #0.7256
+AIC(basicmodel3)                      #0.7527                      
+#basicmodel3  is rejected because of removeal of necessary data
+
+#Selecting significant attributes ,Rsquared-adjusted
+AIC(bettermodel)                      #0.6864       outliers are not removed
+AIC(bettermodel1)                     #0.7297
+AIC(bettermodel2)                     #0.7121
+
+#Log transformation is done on the 2 'bettermodels'
+AIC(transformedmodel)                 #0.7236
+AIC(transformedmodel2)                #0.7067
+```
+
+
+##Therefore it is concluded that bettermodel1 is the best possible mode amongst all
+```{r}
+newdata = attitude[-c(6,12,23),]
+bestmodel = lm(rating ~ complaints+learning,data=newdata)
+summary(bestmodel)
+```
+
+/*
+  It can be oberved that rating is majorly dependent on 2 factors
+1- complaints  - How well the organisation took care of the complaints by the employees
+2- Learnings   - How the organisation facilitated emplyees learning intrest
+
+Compared to the other factors these 2 played a major role in making the employees by good overall rating
+But other factors too contributed in ununiform means , there by making them have various degree of variance.
+That is the reason the best model is havin only 73% accuracy(approx)
+  
+  */
+
