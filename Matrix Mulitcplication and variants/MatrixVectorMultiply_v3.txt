@@ -1,0 +1,37 @@
+Matrix Vector Multiply (version 3):
+Let Matrix M be available in M.txt in hdfs. Let V be available in V.txt, also in hdfs.
+Using MapReduce find Mv and store the output in Mv.txt, in hdfs.
+Check the order of the matrix and the vector and perform the multiply *ONLY* if possible.
+
+M = 
+1 2 -3 -1
+-4 5 6 -3
+7 -8 9 -7
+
+M.txt is as follows: Format is (i,j,Mij)
+1,1,1
+1,2,2
+1,3,-3
+1,4,-1
+2,1,-4
+2,2,5
+2,3,6
+2,4,-3
+3,1,7
+3,2,-8
+3,3,9
+3,4,-7
+
+V =
+-1
+2
+3
+-4
+
+V.txt is as follows: Format is (j,Vj)
+1,-1
+2,2
+3,3
+4,-4
+
+This version of Matrix Vector multiply works for any mxn matrix and nx1 vector.
