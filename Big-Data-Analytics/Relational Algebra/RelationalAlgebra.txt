@@ -1,0 +1,57 @@
+        Relational Algebra:
+Let F(User,Friend) be a relation that indicates Friends. 
+A record P1,P2 indicates that P2 is a friend of P1, but it need not mean P1 is a friend of P2.
+Let this relation be available in db.txt in hdfs.
+
+db.txt: Format User name,Friend name
+A1,B1
+A1,C4
+A2,B2
+A2,B3
+A3,C1
+B1,A2
+B1,B3
+B2,A1
+B3,A2
+B3,A3
+B4,C3
+C1,A2
+C3,B2
+C3,B4
+C4,A2
+C3,B1
+
+
+
+Write individual MapReduce programs to find the following and store it in n.txt in hdfs, where n is q.no:
+1. List the friends of B1
+2. List the friends of B*
+3. List persons who have C* as their friend.
+4. List persons who have both C* and A* as their friend.
+5. List persons who have either A* or B* as their friend.
+6. List all P1,P2 such that P2 is friend of P1 but P1 is not a friend of P2.
+7. List all P1,P2 such that P2 is friend of P1 and P1 is also a friend of P2.
+8. Find the person having maximum number of friends.
+9. Find the person who is friend to maximum persons.
+10. Find popularity rank of each person. Popularity rank(p) = No. of (Friends(Friends(p))
+11. Find the most popular person based on their popularity rank.
+
+
+
+
+('A1','B1'),
+('A1','C4'),
+('A2','B2'),
+('A2','B3'),
+('A3','C1'),
+('B1','A2'),
+('B1','B3'),
+('B2','A1'),
+('B3','A2'),
+('B3','A3'),
+('B4','C3'),
+('C1','A2'),
+('C3','B2'),
+('C3','B4'),
+('C4','A2'),
+('C3','B1')

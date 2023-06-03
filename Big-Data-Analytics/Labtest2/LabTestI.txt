@@ -1,0 +1,45 @@
+A tool for testing internet bandwidth outputs the following into a text file for each hour:
+Hour, Bandwidth in MB/s
+0,100.34
+1,123.89
+.
+.
+.
+22,96.77
+23,49.28
+The numbers 0-23 indicate the hour of the day in 24-hour format.
+
+Write MapReduce code to find the following:
+1. Best Quarter of the day. Q1: 0-5, Q2: 6-11, Q3: 12-17, Q4: 18-23. Best Quarter is the one that had the highest average bandwidth. [10M]
+2. The hour of the day that had the best increase and the worst fall compared to the previous hour. [15M]
+For any of the above, if there are multiple answers, output them all.
+
+Constraint: Should NOT use setup() method and should NOT write code to read any file in Map or Reduce.
+Provide two separate folders for parts 1 and 2.
+Zip the two folders into <regno>.zip and submit the zip file.
+
+The following data can be used:
+0,112.36
+1,143.89
+2,129.43
+3,115.57
+4,101.86
+5,99.36
+6,120.00
+7,135.72
+8,99.53
+9,121.22
+10,115.68
+11,122.73
+12,145.65
+13,144.27
+14,140.79
+15,146.39
+16,122.23
+17,112.65
+18,112.35
+19,100.65
+20,99.75
+21,140.32
+22,153.26
+23,180.99
