@@ -1,4 +1,6 @@
-# Big-Data-Analytics
+#Masters : Data Science and Computing
+#Contains all the relevant course works and assignments together
+## Big-Data-Analytics
 This repository contains all the Assignments and Lab work that were assigned by V Bhaskaran(https://www.sssihl.edu.in/faculty/v-bhaskaran/).
 Each directory has its own Text file(.txt) decribing the problem in details along with the necessary files.
 
